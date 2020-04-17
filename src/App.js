@@ -9,14 +9,14 @@ import CardContent from '@material-ui/core/CardContent';
 // Import custom components
 import NavBarComponent from './components/NavBarComponent';
 import ChartComponent from './components/ChartComponent';
-// Import constants
+// Import utils
 import constants from './Utils/Constants'
 
 class Dashboard extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      globalData: null,
+      globalSummary: null,
     }
   }
 
@@ -27,25 +27,25 @@ class Dashboard extends React.Component {
 
   fetchData = () => {
     // clear previous data
-    this.setState({globalData: null})
+    this.setState({ globalSummary: null })
 
     // fetch new data
-    axios.get(constants.apiUrl.trackerToday)
+    axios.get(constants.covid19ApiUrls.globalSummary)
       .then(res => {
         const data = res.data;
         this.setState({
-          globalData: data
+          globalSummary: data
         });
-        
+
       })
       .catch(err => {
-        alert(`Error fetching tracker data from ${constants.apiUrl.trackerToday}: ${err}`)
+        alert(`Error fetching tracker data from ${constants.covid19ApiUrls.globalSummary}: ${err}`)
       })
   }
 
   render() {
-        
-    const trackerData = this.state.globalData;
+
+    const trackerData = this.state.globalSummary;
     const stats = [
       trackerData && trackerData.confirmed.value ? trackerData.confirmed.value : 0,
       trackerData && trackerData.recovered.value ? trackerData.recovered.value : 0,
@@ -55,21 +55,22 @@ class Dashboard extends React.Component {
       <div>
         <NavBarComponent />
         <br />
-        <Container>
-          <Button variant="contained" color="primary" onClick={this.fetchData}>Reload</Button>
+        <Container maxWidth="md">
+          <Button variant="contained" color="primary" onClick={this.fetchData}>Refresh</Button>
           <br /><br />
 
           {/* Chart card */}
           <Card >
             <CardContent>
               {/* Load bar chart */}
-              {trackerData? <ChartComponent
+              {trackerData ? <ChartComponent
                 labels={['confirmed', 'recovered', 'deaths']}
-                stats={stats} /> : 'Loading...'}
+                stats={stats}
+                lastUpdate={trackerData.lastUpdate} /> : 'Loading...'}
             </CardContent>
 
             <CardActions>
-              <small>Source "{constants.apiUrl.trackerToday}"</small>
+              <small>Source "{constants.covid19ApiUrls.globalSummary}"</small>
             </CardActions>
           </Card>
         </Container>
