@@ -5,6 +5,7 @@ export default class ChartComponent extends React.Component {
 
     state = {
         // labels: this.props.labels ? this.props.labels : [],
+        labels:['Total'],
         datasets: [
             {
                 label: 'Confirmed',
